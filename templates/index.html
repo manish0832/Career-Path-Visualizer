@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen">
+    <!-- Hero Section -->
+    <div class="gradient-bg text-white py-16">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-5xl font-bold mb-6">Discover Your Perfect Career Path</h1>
+            <p class="text-xl mb-8 opacity-90">
+                Get personalized career recommendations based on your skills, interests, and market trends
+            </p>
+            <div class="flex justify-center space-x-4">
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <i class="fas fa-chart-line text-3xl mb-2"></i>
+                    <p class="text-sm">Market Analysis</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <i class="fas fa-brain text-3xl mb-2"></i>
+                    <p class="text-sm">AI Matching</p>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <i class="fas fa-rocket text-3xl mb-2"></i>
+                    <p class="text-sm">Growth Insights</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form id="careerForm" class="space-y-8">
+                <!-- Skills Section -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-code text-blue-600 mr-2"></i>
+                        Select Your Skills
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for category, skills in skills_by_category.items() %}
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-700 mb-3">{{ category }}</h3>
+                            <div class="space-y-2">
+                                {% for skill in skills %}
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="skills" value="{{ skill }}" 
+                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-gray-600">{{ skill }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Interests Section -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-heart text-red-500 mr-2"></i>
+                        What Interests You?
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {% set interests = [
+                            ('Problem Solving', 'fas fa-puzzle-piece'),
+                            ('Creative Design', 'fas fa-palette'),
+                            ('Data Analysis', 'fas fa-chart-bar'),
+                            ('Team Leadership', 'fas fa-users'),
+                            ('Technology Innovation', 'fas fa-lightbulb'),
+                            ('User Experience', 'fas fa-user-friends'),
+                            ('System Architecture', 'fas fa-sitemap'),
+                            ('Business Strategy', 'fas fa-chess')
+                        ] %}
+                        {% for interest, icon in interests %}
+                        <label class="flex items-center p-3 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors">
+                            <input type="checkbox" name="interests" value="{{ interest }}" 
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <i class="{{ icon }} ml-2 text-gray-600"></i>
+                            <span class="ml-2 text-sm text-gray-700">{{ interest }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Experience Level -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                        Experience Level
+                    </h2>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center p-4 border rounded-lg hover:bg-green-50 cursor-pointer transition-colors">
+                            <input type="radio" name="experience" value="entry" checked 
+                                   class="text-green-600 focus:ring-green-500">
+                            <span class="ml-2 font-medium">Entry Level (0-2 years)</span>
+                        </label>
+                        <label class="flex items-center p-4 border rounded-lg hover:bg-blue-50 cursor-pointer transition-colors">
+                            <input type="radio" name="experience" value="mid" 
+                                   class="text-blue-600 focus:ring-blue-500">
+                            <span class="ml-2 font-medium">Mid Level (3-5 years)</span>
+                        </label>
+                        <label class="flex items-center p-4 border rounded-lg hover:bg-purple-50 cursor-pointer transition-colors">
+                            <input type="radio" name="experience" value="senior" 
+                                   class="text-purple-600 focus:ring-purple-500">
+                            <span class="ml-2 font-medium">Senior Level (5+ years)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    <button type="submit" 
+                            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg">
+                        <i class="fas fa-magic mr-2"></i>
+                        Analyze My Career Path
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Section (Hidden initially) -->
+    <div id="results" class="max-w-6xl mx-auto px-4 pb-12 hidden">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                Your Personalized Career Recommendations
+            </h2>
+            
+            <!-- Career Matches -->
+            <div id="careerMatches" class="mb-12"></div>
+            
+            <!-- Visualizations -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div id="salaryChart"></div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div id="jobChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg p-8 text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p class="text-lg font-semibold text-gray-700">Analyzing your career path...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('careerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Show loading
+    document.getElementById('loading').classList.remove('hidden');
+    
+    // Collect form data
+    const formData = new FormData(this);
+    const skills = formData.getAll('skills');
+    const interests = formData.getAll('interests');
+    const experience = formData.get('experience');
+    
+    try {
+        const response = await fetch('/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                skills: skills,
+                interests: interests,
+                experience: experience
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Hide loading
+        document.getElementById('loading').classList.add('hidden');
+        
+        // Display results
+        displayResults(data);
+        
+        // Scroll to results
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loading').classList.add('hidden');
+        alert('An error occurred while analyzing your career path. Please try again.');
+    }
+});
+
+function displayResults(data) {
+    const resultsDiv = document.getElementById('results');
+    const matchesDiv = document.getElementById('careerMatches');
+    
+    // Display career matches
+    let matchesHTML = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">';
+    
+    data.roles.forEach((role, index) => {
+        const matchColor = role.match_score >= 80 ? 'green' : role.match_score >= 60 ? 'blue' : 'yellow';
+        
+        matchesHTML += `
+            <div class="card-hover bg-white border rounded-lg p-6 shadow-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800">${role.title}</h3>
+                    <span class="bg-${matchColor}-100 text-${matchColor}-800 px-3 py-1 rounded-full text-sm font-semibold">
+                        ${role.match_score}% Match
+                    </span>
+                </div>
+                <p class="text-gray-600 mb-4">${role.description}</p>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                        <span class="font-semibold">$${role.avg_salary.toLocaleString()}/year</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                        <span class="font-semibold">${role.growth_rate}% growth rate</span>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <p class="text-sm text-gray-500 mb-2">Required Skills:</p>
+                    <div class="flex flex-wrap gap-1">
+                        ${role.required_skills.map(skill => 
+                            `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">${skill}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    matchesHTML += '</div>';
+    matchesDiv.innerHTML = matchesHTML;
+    
+    // Display charts
+    if (data.salary_chart) {
+        Plotly.newPlot('salaryChart', JSON.parse(data.salary_chart).data, JSON.parse(data.salary_chart).layout);
+    }
+    
+    if (data.job_chart) {
+        Plotly.newPlot('jobChart', JSON.parse(data.job_chart).data, JSON.parse(data.job_chart).layout);
+    }
+    
+    // Show results
+    resultsDiv.classList.remove('hidden');
+}
+</script>
+{% endblock %}
